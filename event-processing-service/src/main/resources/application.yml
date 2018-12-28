@@ -1,0 +1,17 @@
+server:
+  port: 9999
+
+event-processing:
+  event-queue:
+    writer:
+      interval: 2
+      data-file-path: ./src/main/resources/Event_Data.txt
+      number-of-vehicle: 4
+    reader:
+      interval: 4
+  event-processing:
+    thread-pool-size: 10
+    webservice-url: http://localhost:8989/api/trip
+      
+      
+      
