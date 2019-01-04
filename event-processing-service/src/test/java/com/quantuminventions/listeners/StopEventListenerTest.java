@@ -110,7 +110,7 @@ public class StopEventListenerTest {
 		startEvent.setVehicleId("V1");
 		startEvent.setEvent(Event.START);
 		startEvent.setEventTime(stopEvent.getEventTime().minusMinutes(30));
-		epRepository.insertStartEvent(startEvent);
+		epRepository.insertVehicleEvent(startEvent);
 		
 		VehicleTrip wsReturn = new VehicleTrip();
 		wsReturn.setVehicleId("V1");

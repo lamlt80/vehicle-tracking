@@ -1,7 +1,5 @@
 package com.quantuminventions.api.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -28,13 +26,28 @@ public class TripRepository {
 		this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
 	}
 	
+	private static RowMapper<VehicleTrip> rowMapper = (resultSet, rowNum) -> {
+		if (resultSet.wasNull()) {
+			return null;
+		}
+		
+		VehicleTrip vehicleTrip = new VehicleTrip();
+		vehicleTrip.setId(resultSet.getLong("id"));
+		vehicleTrip.setVehicleId(resultSet.getString("vehicle_id"));
+		vehicleTrip.setTripNo(resultSet.getInt("trip_no"));
+		vehicleTrip.setTripDuration(resultSet.getString("trip_duration"));
+		vehicleTrip.setCreatedTime(resultSet.getTimestamp("created_time").toLocalDateTime());
+		
+		return vehicleTrip;
+	};
+	
 	public VehicleTrip findById(long id) {
 		String sql = "SELECT * FROM vehicle_trip WHERE id=:id";
 		
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 		
-		List<VehicleTrip> rsList = namedParameterJdbcTemplate.query(sql, params, new VehicleTripMapper());
+		List<VehicleTrip> rsList = namedParameterJdbcTemplate.query(sql, params, rowMapper);
 		if (rsList.isEmpty()) {
 			return null;
 		} else {
@@ -48,7 +61,7 @@ public class TripRepository {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("vehicleId", vehicleId);
 		
-		return namedParameterJdbcTemplate.query(sql, params, new VehicleTripMapper());
+		return namedParameterJdbcTemplate.query(sql, params, rowMapper);
 	}
 	
 	public VehicleTrip findByVehicleIdAndTripNumber(String vehicleId, long tripNo) {
@@ -58,7 +71,7 @@ public class TripRepository {
 		params.put("vehicleId", vehicleId);
 		params.put("tripNo", tripNo);
 		
-		List<VehicleTrip> rsList = namedParameterJdbcTemplate.query(sql, params, new VehicleTripMapper());
+		List<VehicleTrip> rsList = namedParameterJdbcTemplate.query(sql, params, rowMapper);
 		if (rsList.isEmpty()) {
 			return null;
 		} else {
@@ -83,24 +96,6 @@ public class TripRepository {
 		namedParameterJdbcTemplate.update(sql, paramSource, keyHolder);
 
 		return keyHolder.getKey().longValue();
-	}
-	
-	private static final class VehicleTripMapper implements RowMapper<VehicleTrip> {
-		
-		public VehicleTrip mapRow(ResultSet rs, int rowNum) throws SQLException {
-			if (rs.wasNull()) {
-				return null;
-			}
-			
-			VehicleTrip vehicleTrip = new VehicleTrip();
-			vehicleTrip.setId(rs.getLong("id"));
-			vehicleTrip.setVehicleId(rs.getString("vehicle_id"));
-			vehicleTrip.setTripNo(rs.getInt("trip_no"));
-			vehicleTrip.setTripDuration(rs.getString("trip_duration"));
-			vehicleTrip.setCreatedTime(rs.getTimestamp("created_time").toLocalDateTime());
-			
-			return vehicleTrip;
-		}
 	}
 
 }

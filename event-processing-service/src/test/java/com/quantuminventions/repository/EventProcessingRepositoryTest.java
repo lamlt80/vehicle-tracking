@@ -60,7 +60,7 @@ public class EventProcessingRepositoryTest {
 	@Test
     public void insertStartEventTest() throws Exception {
 		deleteAll();
-		long id = eventRepository.insertStartEvent(startEvent);
+		long id = eventRepository.insertVehicleEvent(startEvent);
 		Optional<VehicleEvent> insertedEvent = eventRepository.findById(id);
 		
 		Assert.assertTrue(insertedEvent.isPresent());
@@ -69,13 +69,12 @@ public class EventProcessingRepositoryTest {
 		
 		Assert.assertEquals(1, insertedEvent.get().getTripNo());
 		
-		deleteAll();
     }
 	
 	@Test
     public void insertStopEventTest() throws Exception {
 		deleteAll();
-		long id = eventRepository.insertStopEvent(stopEvent);
+		long id = eventRepository.insertVehicleEvent(stopEvent);
 		Optional<VehicleEvent> insertedEvent = eventRepository.findById(id);
 		
 		Assert.assertTrue(insertedEvent.isPresent());
@@ -84,16 +83,15 @@ public class EventProcessingRepositoryTest {
 		
 		Assert.assertEquals(0, insertedEvent.get().getTripNo());
 		
-		deleteAll();
     }
 	
 	@Test
     public void insert2StopEventTest() throws Exception {
 		deleteAll();
-		long id = eventRepository.insertStopEvent(stopEvent);
+		long id = eventRepository.insertVehicleEvent(stopEvent);
 		Optional<VehicleEvent> insertedEvent = eventRepository.findById(id);
 		
-		id = eventRepository.insertStopEvent(stopEvent);
+		id = eventRepository.insertVehicleEvent(stopEvent);
 		insertedEvent = eventRepository.findById(id);
 		
 		Assert.assertTrue(insertedEvent.isPresent());
@@ -101,17 +99,15 @@ public class EventProcessingRepositoryTest {
 		Assert.assertEquals(Event.STOP, insertedEvent.get().getEvent());
 		
 		Assert.assertEquals(0, insertedEvent.get().getTripNo());
-		
-		deleteAll();
     }
 	
 	@Test
     public void insertStartStopEventsTest() throws Exception {
 		deleteAll();
-		long id = eventRepository.insertStartEvent(startEvent);
+		long id = eventRepository.insertVehicleEvent(startEvent);
 		Optional<VehicleEvent> insertedStartEvent = eventRepository.findById(id);
 		
-		id = eventRepository.insertStopEvent(stopEvent);
+		id = eventRepository.insertVehicleEvent(stopEvent);
 		Optional<VehicleEvent> insertedStopEvent = eventRepository.findById(id);
 		
 		Assert.assertTrue(insertedStartEvent.isPresent());
@@ -125,8 +121,6 @@ public class EventProcessingRepositoryTest {
 		Assert.assertEquals(1, insertedStopEvent.get().getTripNo());
 		Assert.assertEquals(insertedStartEvent.get().getVehicleId(), insertedStopEvent.get().getVehicleId());
 		Assert.assertEquals(insertedStartEvent.get().getTripNo(), insertedStopEvent.get().getTripNo());
-		
-		deleteAll();
     }
 	
 	@Test
@@ -134,21 +128,19 @@ public class EventProcessingRepositoryTest {
 		deleteAll();
 		VehicleEvent noneEvent = stopEvent;
 		noneEvent.setEvent(Event.NONE);
-		long id = eventRepository.insertNoneEvent(noneEvent);
+		long id = eventRepository.insertVehicleEvent(noneEvent);
 		Optional<VehicleEvent> insertedEvent = eventRepository.findById(id);
 		
 		Assert.assertTrue(insertedEvent.isPresent());
 		Assert.assertEquals("V1", insertedEvent.get().getVehicleId());
 		Assert.assertEquals(Event.NONE, insertedEvent.get().getEvent());
-		
-		deleteAll();
     }
 	
 	@Test
     public void findEventHasMaxTripNoTestWithData() throws Exception {
 		deleteAll();
-		eventRepository.insertStartEvent(startEvent);
-		eventRepository.insertStartEvent(startEvent);
+		eventRepository.insertVehicleEvent(startEvent);
+		eventRepository.insertVehicleEvent(startEvent);
 		
 		Optional<VehicleEvent> maxTripNoEvent = eventRepository.findEventHasMaxTripNo("V1", Event.START.name());
 		Assert.assertTrue(maxTripNoEvent.isPresent());
@@ -156,7 +148,6 @@ public class EventProcessingRepositoryTest {
 		Assert.assertEquals(Event.START, maxTripNoEvent.get().getEvent());
 		
 		Assert.assertEquals(2, maxTripNoEvent.get().getTripNo());
-		deleteAll();
     }
 	
 	@Test
@@ -170,7 +161,7 @@ public class EventProcessingRepositoryTest {
 	@Test
     public void findByVehicleIdAndEventTestWithData() throws Exception {
 		deleteAll();
-		eventRepository.insertStartEvent(startEvent);
+		eventRepository.insertVehicleEvent(startEvent);
 		
 		List<Optional<VehicleEvent>> maxTripNoEvents = eventRepository.findByVehicleIdAndEvent("V1", Event.START.name());
 		Assert.assertFalse(maxTripNoEvents.isEmpty());
@@ -179,7 +170,6 @@ public class EventProcessingRepositoryTest {
 		Assert.assertEquals(Event.START, maxTripNoEvents.get(0).get().getEvent());
 		
 		Assert.assertEquals(1, maxTripNoEvents.get(0).get().getTripNo());
-		deleteAll();
     }
 	
 	@Test

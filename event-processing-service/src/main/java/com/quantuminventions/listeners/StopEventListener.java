@@ -3,12 +3,11 @@ package com.quantuminventions.listeners;
 import java.time.Duration;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.quantuminventions.config.EventProcessingProperties;
@@ -33,8 +32,9 @@ public class StopEventListener implements VehicleEventListener {
 			RestTemplate restTemplate) {
 		this.epRepository = epRepository;
 		this.restTemplate = restTemplate;
-		this.webserviceURL = (epProperties != null && epProperties.getEventProcessing() != null) ? 
-				epProperties.getEventProcessing().getWebserviceURL() : "";
+		this.webserviceURL = (epProperties != null 
+								&& epProperties.getEventProcessing() != null) ? 
+								epProperties.getEventProcessing().getWebserviceURL() : "";
 	}
 
 	@Override
@@ -44,7 +44,10 @@ public class StopEventListener implements VehicleEventListener {
 		
 		Optional<VehicleEvent> stopEvent = epRepository.findById(id);
 		Optional<VehicleEvent> startEvent = 
-				epRepository.findByVehicleIdAndEventAndTripNumber(stopEvent.get().getVehicleId(), Event.START.name(), stopEvent.get().getTripNo());
+				epRepository.findByVehicleIdAndEventAndTripNumber(
+						stopEvent.get().getVehicleId(), 
+						Event.START.name(), 
+						stopEvent.get().getTripNo());
 		
 		if (startEvent.isPresent()) {
 			log.info("startEvent: {}", startEvent);
@@ -66,7 +69,6 @@ public class StopEventListener implements VehicleEventListener {
 	@Transactional
 	private long insertStopEvent(VehicleEvent vehicleEvent) {
 		log.info("Insert STOP event: {}", vehicleEvent);
-		return epRepository.insertStopEvent(vehicleEvent);
+		return epRepository.insertVehicleEvent(vehicleEvent);
 	}
-
 }
